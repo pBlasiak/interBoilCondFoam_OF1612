@@ -13,6 +13,52 @@ volScalarField p_rgh
     ),
     mesh
 );
+// Need to store rho for ddt(rho, U)
+volScalarField rho
+(
+    IOobject
+    (
+        "rho",
+        runTime.timeName(),
+        mesh,
+        IOobject::READ_IF_PRESENT
+    ),
+    mesh,
+	dimensionedScalar("rho0", dimDensity, 0.0)
+    //alpha1*rho1 + alpha2*rho2
+);
+rho.oldTime();
+
+#include "readGravitationalAcceleration.H"
+#include "readhRef.H"
+#include "gh.H"
+
+volScalarField p
+(
+    IOobject
+    (
+        "p",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    p_rgh + rho*gh
+);
+
+Info<< "Reading field T\n" << endl;
+volScalarField T
+(
+    IOobject
+    (
+        "T",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
 
 Info<< "Reading field U\n" << endl;
 volVectorField U
@@ -43,19 +89,6 @@ const dimensionedScalar& rho2 = mixture->rho2();
 const dimensionedScalar& cp1 = mixture->cp1();
 const dimensionedScalar& cp2 = mixture->cp2();
 
-// Need to store rho for ddt(rho, U)
-volScalarField rho
-(
-    IOobject
-    (
-        "rho",
-        runTime.timeName(),
-        mesh,
-        IOobject::READ_IF_PRESENT
-    ),
-    alpha1*rho1 + alpha2*rho2
-);
-rho.oldTime();
 
 
 // Mass flux
@@ -80,23 +113,8 @@ autoPtr<incompressible::turbulenceModel> turbulence
 );
 
 
-#include "readGravitationalAcceleration.H"
-#include "readhRef.H"
-#include "gh.H"
 
 
-volScalarField p
-(
-    IOobject
-    (
-        "p",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    p_rgh + rho*gh
-);
 
 label pRefCell = 0;
 scalar pRefValue = 0.0;
