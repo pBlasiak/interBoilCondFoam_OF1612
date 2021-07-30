@@ -4,6 +4,7 @@
     (
         fvm::ddt(rho, U) + fvm::div(rhoPhi, U)
       + MRF.DDt(rho, U)
+//  - fvm::Sp(fvc::ddt(rho) + fvc::div(rhoPhi), U) // from interPhaseChangeFoam
       + turbulence->divDevRhoReff(rho, U)
      ==
         fvOptions(rho, U)

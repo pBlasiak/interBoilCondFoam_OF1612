@@ -77,6 +77,12 @@
         phiCN = cnCoeff*phi + (1.0 - cnCoeff)*phi.oldTime();
     }
 
+    Pair<tmp<volScalarField>> vDotAlphal =
+        mixture->vDotAlphal();
+    const volScalarField& vDotcAlphal = vDotAlphal[0]();
+    const volScalarField& vDotvAlphal = vDotAlphal[1]();
+    const volScalarField vDotvmcAlphal(vDotvAlphal - vDotcAlphal);
+
     if (MULESCorr)
     {
         fvScalarMatrix alpha1Eqn
@@ -92,6 +98,10 @@
                 phiCN,
                 upwind<scalar>(mesh, phiCN)
             ).fvmDiv(phiCN, alpha1)
+          - fvm::Sp(divU, alpha1)
+         ==
+            fvm::Sp(vDotvmcAlphal, alpha1)
+          + vDotcAlphal
         );
 
         alpha1Eqn.solve();
@@ -105,6 +115,8 @@
         tmp<surfaceScalarField> talphaPhiUD(alpha1Eqn.flux());
         alphaPhi = talphaPhiUD();
 
+		// tego if nie poprawilem
+		// trzeba by raczej correct inny dac???
         if (alphaApplyPrevCorr && talphaPhiCorr0.valid())
         {
             Info<< "Applying the previous iteration compression flux" << endl;
@@ -154,7 +166,22 @@
             tmp<surfaceScalarField> talphaPhiCorr(alphaPhiUn - alphaPhi);
             volScalarField alpha10("alpha10", alpha1);
 
-            MULES::correct(alpha1, alphaPhiUn, talphaPhiCorr.ref(), 1, 0);
+            //MULES::correct(alpha1, alphaPhiUn, talphaPhiCorr.ref(), 1, 0);
+            MULES::correct
+            (
+                geometricOneField(),
+                alpha1,
+                alphaPhiUn,
+                talphaPhiCorr.ref(),
+                vDotvmcAlphal,
+                (
+                    //divU*(alpha10 - alpha100)
+                    divU*alpha10 
+                  - vDotvmcAlphal*alpha10
+                )(),
+                1,
+                0
+            );
 
             // Under-relax the correction for all but the 1st corrector
             if (aCorr == 0)
@@ -172,6 +199,10 @@
             alphaPhi = alphaPhiUn;
 
             MULES::explicitSolve(alpha1, phiCN, alphaPhi, 1, 0);
+            MULES::explicitSolve(geometricOneField(), alpha1, phiCN, alphaPhi, 
+					vDotvmcAlphal, 
+                (divU*alpha1 + vDotcAlphal)(),
+					1, 0);
         }
 
         alpha2 = 1.0 - alpha1;

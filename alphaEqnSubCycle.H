@@ -1,3 +1,5 @@
+volScalarField divU(fvc::div(phi));
+
 if (nAlphaSubCycles > 1)
 {
     dimensionedScalar totalDeltaT = runTime.deltaT();
