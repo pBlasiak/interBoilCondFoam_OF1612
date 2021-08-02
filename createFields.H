@@ -89,6 +89,7 @@ const dimensionedScalar& rho2 = mixture->rho2();
 const dimensionedScalar& cp1 = mixture->cp1();
 const dimensionedScalar& cp2 = mixture->cp2();
 
+const dimensionedScalar& pSat = mixture->pSat();
 
 
 // Mass flux
