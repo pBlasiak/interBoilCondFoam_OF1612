@@ -198,7 +198,7 @@
         {
             alphaPhi = alphaPhiUn;
 
-            MULES::explicitSolve(alpha1, phiCN, alphaPhi, 1, 0);
+            //MULES::explicitSolve(alpha1, phiCN, alphaPhi, 1, 0);
             MULES::explicitSolve(geometricOneField(), alpha1, phiCN, alphaPhi, 
 					vDotvmcAlphal, 
                 (divU*alpha1 + vDotcAlphal)(),
@@ -222,6 +222,7 @@
     )
     {
         rhoPhi = alphaPhi*(rho1 - rho2) + phiCN*rho2;
+        rhoPhiCpf = alphaPhi*(rho1*cp1 - rho2*cp2) + phiCN*rho2*cp2;
     }
     else
     {
@@ -233,6 +234,7 @@
 
         // Calculate the end-of-time-step mass flux
         rhoPhi = alphaPhi*(rho1 - rho2) + phi*rho2;
+        rhoPhiCpf = alphaPhi*(rho1*cp1 - rho2*cp2) + phiCN*rho2*cp2;
     }
 
     Info<< "Phase-1 volume fraction = "

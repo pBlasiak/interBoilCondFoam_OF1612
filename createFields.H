@@ -92,6 +92,69 @@ const dimensionedScalar& cp2 = mixture->cp2();
 const dimensionedScalar& pSat = mixture->pSat();
 
 
+rho = alpha1*rho1 + alpha2*rho2;
+p = p_rgh + rho*gh;
+mixture->correct();
+volScalarField TSat = mixture->TSat();
+
+// Need to store for turbulentHeatFluxTemperature BC
+Info<< "Creating field cp\n" << endl;
+volScalarField cp
+(
+    IOobject
+    (
+        "cp",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+	mesh,
+    dimensionedScalar("cp00", dimensionSet(0,2,-2,-1,0,0,0), 0)
+);
+cp = mixture->cp();
+
+// Need to store rho for ddt(rhoCp, T)
+volScalarField rhoCp
+(
+    IOobject
+    (
+        "rhoCp",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    rho1*alpha1*cp1 + rho2*alpha2*cp2
+);
+rhoCp.oldTime();
+
+surfaceScalarField rhoPhiCpf
+(
+    IOobject
+    (
+        "rhoPhiCpf",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    fvc::interpolate(rhoCp)*phi
+);
+
+volScalarField k
+(
+    IOobject
+    (
+        "k",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    mixture->k()
+);
+
 // Mass flux
 surfaceScalarField rhoPhi
 (

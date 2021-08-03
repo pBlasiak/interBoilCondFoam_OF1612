@@ -124,6 +124,7 @@ int main(int argc, char *argv[])
                 turbulence->correct();
             }
         }
+        #include "TEqn.H"
 
         runTime.write();
 
