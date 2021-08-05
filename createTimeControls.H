@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2015 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,36 +22,23 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Global
-    alphaCourantNo
+    readTimeControls
 
 Description
-    Calculates and outputs the mean and maximum Courant Numbers.
+    Read the control parameters used by setDeltaT
 
 \*---------------------------------------------------------------------------*/
 
-scalar maxAlphaCo
-(
-    readScalar(runTime.controlDict().lookup("maxAlphaCo"))
-);
+bool adjustTimeStep =
+    runTime.controlDict().lookupOrDefault("adjustTimeStep", false);
 
-scalar alphaCoNum = 0.0;
-scalar meanAlphaCoNum = 0.0;
+scalar maxGalusinskiVigneaux =
+    runTime.controlDict().lookupOrDefault<scalar>("maxGalusinskiVigneaux", 1.0);
 
-if (mesh.nInternalFaces())
-{
-    scalarField sumPhi
-    (
-        mixture->nearInterface()().primitiveField()
-       *fvc::surfaceSum(mag(phi))().primitiveField()
-    );
+//scalar maxCo =
+//	runTime.controlDict().lookupOrDefault<scalar>("maxCo", 1.0);
 
-    alphaCoNum = 0.5*gMax(sumPhi/mesh.V().field())*runTime.deltaTValue();
-
-    meanAlphaCoNum =
-        0.5*(gSum(sumPhi)/gSum(mesh.V().field()))*runTime.deltaTValue();
-}
-
-Info<< "Interface Courant Number mean: " << meanAlphaCoNum
-    << " max: " << alphaCoNum << endl;
+scalar maxDeltaT =
+    runTime.controlDict().lookupOrDefault<scalar>("maxDeltaT", GREAT);
 
 // ************************************************************************* //

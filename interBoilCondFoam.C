@@ -22,21 +22,23 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    interFoam
+    interBoilCondFoam
 
 Group
     grpMultiphaseSolvers
 
 Description
-    Solver for 2 incompressible, isothermal immiscible fluids using a VOF
-    (volume of fluid) phase-fraction based interface capturing approach.
+    Solver for 2 incompressible, immiscible fluids with phase-change
+    (boiling, condensation).  Uses a VOF (volume of fluid) phase-fraction based
+    interface capturing approach. Solver is based on interFoam.
 
-    The momentum and other fluid properties are of the "mixture" and a single
-    momentum equation is solved.
+    The momentum and other fluid properties are of the "mixture" and a
+    single momentum equation is solved.
+
+    The set of phase-change models provided are designed to simulate boiling
+    and condensation.
 
     Turbulence modelling is generic, i.e. laminar, RAS or LES may be selected.
-
-    For a two-fluid approach see twoPhaseEulerFoam.
 
 \*---------------------------------------------------------------------------*/
 
@@ -47,7 +49,6 @@ Description
 #include "CrankNicolsonDdtScheme.H"
 #include "subCycle.H"
 #include "phaseChangeTwoPhaseMixture.H"
-//#include "immiscibleIncompressibleTwoPhaseMixture.H"
 #include "turbulentTransportModel.H"
 #include "pimpleControl.H"
 #include "fvOptions.H"
@@ -68,6 +69,9 @@ int main(int argc, char *argv[])
     #include "createTimeControls.H"
     #include "initContinuityErrs.H"
     #include "createFields.H"
+    #include "getCellDims.H"
+	#include "GalusinskiVigneauxNo.H"
+    #include "setInitialDeltaT.H"
     #include "createFvOptions.H"
     #include "correctPhi.H"
 
@@ -75,8 +79,8 @@ int main(int argc, char *argv[])
 
     if (!LTS)
     {
-        #include "readTimeControls.H"
-        #include "CourantNo.H"
+        #include "createTimeControls.H"
+	    #include "GalusinskiVigneauxNo.H"
         #include "setInitialDeltaT.H"
     }
 
@@ -86,7 +90,7 @@ int main(int argc, char *argv[])
 
     while (runTime.run())
     {
-        #include "readTimeControls.H"
+        #include "createTimeControls.H"
 
         if (LTS)
         {
@@ -94,8 +98,8 @@ int main(int argc, char *argv[])
         }
         else
         {
-            #include "CourantNo.H"
-            #include "alphaCourantNo.H"
+            #include "GalusinskiVigneauxNo.H"
+            #include "alphaGalusinskiVigneauxNo.H"
             #include "setDeltaT.H"
         }
 
@@ -125,6 +129,15 @@ int main(int argc, char *argv[])
             }
         }
         #include "TEqn.H"
+
+		// czy to jest tu potrzebne?
+		// chyba do aktualizacji Tsat bylo?
+        mixture->correct();
+
+		//if (printWallHeatFluxes)
+		//{
+		//	#include "calcWallHeatFluxes.H"
+		//}
 
         runTime.write();
 

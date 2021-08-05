@@ -27,17 +27,6 @@
 		  fvm::Sp(vDotcmvT, T) - vDotcmvT*TSat	
 	);
 
-	//fvScalarMatrix TEqn
-	//(
-	//	  fvm::ddt(rhoCp,T)
-	//	+ fvm::div(rhoPhiCpf, T)
-	////	- fvm::Sp(fvc::ddt(rhoCp) + fvc::div(rhoPhiCpf), T) // similarly to U in interPhaseChangeFoam
-	//	//- fvm::laplacian(k, T,"laplacian(k,T)")
-	//	- fvm::laplacian(kf, T,"laplacian(kf,T)")
-	// ==
-	//	  fvm::Sp(vDotcmvT, T) - vDotcmvT*TSat	
-	//);
-
     TEqn.relax();
     TEqn.solve();
 

@@ -2,9 +2,8 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2015, Alex Rattner and Mahdi Nabil
-     \\/     M anipulation  | Multiscale Thermal Fluids and Energy (MTFE)
-                            | Laboratory, PSU 
+    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+     \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
@@ -23,33 +22,36 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Global
-    setDeltaT
+    alphaGalusinskiVigneauxNo
 
 Description
-    Reset the timestep to maintain a constant maximum courant Number.
-    Reduction of time-step is immediate, but increase is damped to avoid
-    unstable oscillations.
+    Calculates and outputs the mean and maximum Courant Numbers.
 
 \*---------------------------------------------------------------------------*/
 
-if (adjustTimeStep)
+scalar maxAlphaGalusinskiVigneaux
+(
+    readScalar(runTime.controlDict().lookup("maxAlphaGalusinskiVigneaux"))
+);
+
+scalar alphaGalusinskiVigneauxNum = 0.0;
+scalar meanAlphaGalusinskiVigneauxNum = 0.0;
+
+if (mesh.nInternalFaces())
 {
-    scalar maxDeltaTFact = 
-		min(maxGalusinskiVigneaux/(GalusinskiVigneauxNum + SMALL), 
-				maxAlphaGalusinskiVigneaux/(alphaGalusinskiVigneauxNum + SMALL));
-
-    scalar deltaTFact = min(min(maxDeltaTFact, 1.0 + 0.01*maxDeltaTFact), 1.2);
-
-    runTime.setDeltaT
+    scalarField sumPhi
     (
-        min
-        (
-            deltaTFact*runTime.deltaTValue(),
-            maxDeltaT
-        )
+        mixture->nearInterface()().primitiveField()
+       *fvc::surfaceSum(mag(phi))().primitiveField()
     );
 
-    Info<< "deltaT = " <<  runTime.deltaTValue() << endl;
+    alphaGalusinskiVigneauxNum = 0.5*gMax(sumPhi/mesh.V().field())*runTime.deltaTValue();
+
+    meanAlphaGalusinskiVigneauxNum =
+        0.5*(gSum(sumPhi)/gSum(mesh.V().field()))*runTime.deltaTValue();
 }
+
+Info<< "Interface GalusinskiVigneaux Number mean: " << meanAlphaGalusinskiVigneauxNum
+    << " max: " << alphaGalusinskiVigneauxNum << endl;
 
 // ************************************************************************* //

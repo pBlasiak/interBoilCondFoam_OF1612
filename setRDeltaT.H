@@ -3,14 +3,14 @@
 
     const dictionary& pimpleDict = pimple.dict();
 
-    scalar maxCo
+    scalar maxGalusinskiVigneaux
     (
-        pimpleDict.lookupOrDefault<scalar>("maxCo", 0.9)
+        pimpleDict.lookupOrDefault<scalar>("maxGalusinskiVigneaux", 1.0)
     );
 
-    scalar maxAlphaCo
+    scalar maxAlphaGalusinskiVigneaux
     (
-        pimpleDict.lookupOrDefault<scalar>("maxAlphaCo", 0.2)
+        pimpleDict.lookupOrDefault<scalar>("maxAlphaGalusinskiVigneaux", 0.2)
     );
 
     scalar rDeltaTSmoothingCoeff
@@ -60,10 +60,10 @@
     (
         1/dimensionedScalar("maxDeltaT", dimTime, maxDeltaT),
         fvc::surfaceSum(mag(rhoPhi))()()
-       /((2*maxCo)*mesh.V()*rho())
+       /((2*maxGalusinskiVigneaux)*mesh.V()*rho())
     );
 
-    if (maxAlphaCo < maxCo)
+    if (maxAlphaGalusinskiVigneaux < maxGalusinskiVigneaux)
     {
         // Further limit the reciprocal time-step
         // in the vicinity of the interface
@@ -76,7 +76,7 @@
             pos(alpha1Bar() - alphaSpreadMin)
            *pos(alphaSpreadMax - alpha1Bar())
            *fvc::surfaceSum(mag(phi))()()
-           /((2*maxAlphaCo)*mesh.V())
+           /((2*maxAlphaGalusinskiVigneaux)*mesh.V())
         );
     }
 
