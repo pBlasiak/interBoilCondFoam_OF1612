@@ -133,6 +133,7 @@
         mixture->correct();
     }
 
+    volScalarField alpha10("alpha10", alpha1);
 
     for (int aCorr=0; aCorr<nAlphaCorr; aCorr++)
     {
@@ -164,7 +165,9 @@
         if (MULESCorr)
         {
             tmp<surfaceScalarField> talphaPhiCorr(alphaPhiUn - alphaPhi);
-            volScalarField alpha10("alpha10", alpha1);
+            //volScalarField alpha10("alpha10", alpha1);
+            volScalarField alpha100("alpha100", alpha10);
+            alpha10 = alpha1;
 
             //MULES::correct(alpha1, alphaPhiUn, talphaPhiCorr.ref(), 1, 0);
             MULES::correct
@@ -175,8 +178,8 @@
                 talphaPhiCorr.ref(),
                 vDotvmcAlphal,
                 (
-                    //divU*(alpha10 - alpha100)
-                    divU*alpha10 
+                    divU*(alpha10 - alpha100)
+                    //divU*alpha10 
                   - vDotvmcAlphal*alpha10
                 )(),
                 1,
