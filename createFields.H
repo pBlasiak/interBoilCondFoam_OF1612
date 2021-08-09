@@ -98,6 +98,22 @@ mixture->correct();
 volScalarField TSat = mixture->TSat();
 
 // Need to store for turbulentHeatFluxTemperature BC
+Info<< "Creating field alphaEff\n" << endl;
+volScalarField alphaEff
+(
+    IOobject
+    (
+        "alphaEff",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+	mesh,
+    dimensionedScalar("alphaEff0", dimensionSet(0,2,-1,0,0,0,0), 0)
+);
+
+// Need to store for turbulentHeatFluxTemperature BC
 Info<< "Creating field cp\n" << endl;
 volScalarField cp
 (

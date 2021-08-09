@@ -1,10 +1,23 @@
     MRF.correctBoundaryVelocity(U);
 
+    //fvVectorMatrix UEqn
+    //(
+    //    fvm::ddt(rho, U) + fvm::div(rhoPhi, U)
+    //  + MRF.DDt(rho, U)
+//  //- fvm::Sp(fvc::ddt(rho) + fvc::div(rhoPhi), U) // from interPhaseChangeFoam
+    //  + turbulence->divDevRhoReff(rho, U)
+    // ==
+    //    fvOptions(rho, U)
+    //);
     fvVectorMatrix UEqn
     (
-        fvm::ddt(rho, U) + fvm::div(rhoPhi, U)
-      + MRF.DDt(rho, U)
-//  - fvm::Sp(fvc::ddt(rho) + fvc::div(rhoPhi), U) // from interPhaseChangeFoam
+	    rho*
+        (
+            fvm::ddt(U) 
+		  + fvm::div(phi, U)
+          + MRF.DDt(U)
+          - fvm::Sp(fvc::div(phi), U)
+		)
       + turbulence->divDevRhoReff(rho, U)
      ==
         fvOptions(rho, U)

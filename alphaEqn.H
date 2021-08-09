@@ -199,10 +199,17 @@
             alphaPhi = alphaPhiUn;
 
             //MULES::explicitSolve(alpha1, phiCN, alphaPhi, 1, 0);
-            MULES::explicitSolve(geometricOneField(), alpha1, phiCN, alphaPhi, 
-					vDotvmcAlphal, 
+            MULES::explicitSolve
+			(
+		        geometricOneField(), 
+				alpha1, 
+				phiCN, 
+				alphaPhi, 
+				vDotvmcAlphal, 
                 (divU*alpha1 + vDotcAlphal)(),
-					1, 0);
+				1, 
+				0
+			);
         }
 
         alpha2 = 1.0 - alpha1;

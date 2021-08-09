@@ -8,23 +8,21 @@
     //alphat = turbulence->nut()/Prt;
     //alphat.correctBoundaryConditions();
 	//alphaEff = mixture->alphaEff() + alphat;
-	//k = alphaEff*rhoCp;
+	alphaEff = mixture->alphaEff();
 	
 	// trzeba dodac kt dla turbulencji
-	//k = mixture->k();
-	surfaceScalarField kf = mixture->kfHarmonic();
+	//surfaceScalarField kf = mixture->kfHarmonic();
 	cp = mixture->cp();
+	
 
 	fvScalarMatrix TEqn
 	(
-		  rhoCp*(
-			  fvm::ddt(T)
-			+ fvm::div(phi, T)
-			- fvm::Sp(fvc::div(phi), T)
-			  )
-		- fvm::laplacian(kf, T,"laplacian(kf,T)")
+		  fvm::ddt(T)
+		+ fvm::div(phi, T)
+	    - fvm::Sp(fvc::div(phi),T)
+		- fvm::laplacian(alphaEff, T,"laplacian(alphaEff,T)")
 	 ==
-		  fvm::Sp(vDotcmvT, T) - vDotcmvT*TSat	
+		  fvm::Sp(vDotcmvT/rhoCp, T) - vDotcmvT/rhoCp*TSat	
 	);
 
     TEqn.relax();
