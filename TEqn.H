@@ -9,6 +9,7 @@
     //alphat.correctBoundaryConditions();
 	//alphaEff = mixture->alphaEff() + alphat;
 	alphaEff = mixture->alphaEff();
+	surfaceScalarField alphaEfff = mixture->alphaEfff();
 	
 	// trzeba dodac kt dla turbulencji
 	//surfaceScalarField kf = mixture->kfHarmonic();
