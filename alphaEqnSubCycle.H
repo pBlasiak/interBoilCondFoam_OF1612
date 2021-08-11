@@ -41,7 +41,7 @@ else
 }
 
 // from interThermalPhaseChangeFoam
-mixture->interfaceProperties::correct();
+//mixture->interfaceProperties::correct();
 
 rho == alpha1*rho1 + alpha2*rho2;
     rhoCp == alpha1*rho1*cp1 + alpha2*rho2*cp2;

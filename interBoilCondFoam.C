@@ -107,13 +107,15 @@ int main(int argc, char *argv[])
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
+            mixture->correct();
+
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
         {
             #include "alphaControls.H"
             #include "alphaEqnSubCycle.H"
 
-            mixture->correct();
+            //mixture->correct();
 
             #include "UEqn.H"
 
@@ -132,7 +134,7 @@ int main(int argc, char *argv[])
 
 		// czy to jest tu potrzebne?
 		// chyba do aktualizacji Tsat bylo?
-        mixture->correct();
+//        mixture->correct();
 
 		//if (printWallHeatFluxes)
 		//{
