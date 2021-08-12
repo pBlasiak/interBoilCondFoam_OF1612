@@ -26,19 +26,20 @@
     // Update the pressure BCs to ensure flux consistency
     constrainPressure(p_rgh, U, phiHbyA, rAUf, MRF);
 
-    //Pair<tmp<volScalarField> > vDotP = mixture->vDotP();
-    //const volScalarField& vDotcP = vDotP[0]();
-    //const volScalarField& vDotvP = vDotP[1]();
-    const volScalarField& vDotc = mixture->vmCond()/rho1;
-    const volScalarField& vDotv = mixture->vmEvap()/rho1;
-    const volScalarField vDotNetto(vDotc - vDotv);
+    Pair<tmp<volScalarField> > vDotP = mixture->vDotP();
+    const volScalarField& vDotcP = vDotP[0]();
+    const volScalarField& vDotvP = vDotP[1]();
+    //const volScalarField& vDotc = mixture->vmCond();
+    //const volScalarField& vDotv = mixture->vmEvap();
+    //const volScalarField vDotNetto(vDotc + vDotv);
     while (pimple.correctNonOrthogonal())
     {
         fvScalarMatrix p_rghEqn
         (
             fvm::laplacian(rAUf, p_rgh) == fvc::div(phiHbyA)
-	//	  -	fvm::Sp(vDotcP-vDotvP,p_rgh) + (vDotcP-vDotvP)*(pSat-rho*gh) 
-	      - vDotNetto*(1./rho1 - 1./rho2)
+		  - (vDotcP + vDotvP)
+		  //-	fvm::Sp(vDotcP-vDotvP,p_rgh) + (vDotcP-vDotvP)*(pSat-rho*gh) 
+	   //   - vDotNetto*(1./rho1 - 1./rho2)
         );
 
         p_rghEqn.setReference(pRefCell, getRefCellValue(p_rgh, pRefCell));

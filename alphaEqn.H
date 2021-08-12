@@ -77,11 +77,11 @@
         phiCN = cnCoeff*phi + (1.0 - cnCoeff)*phi.oldTime();
     }
 
-//    Pair<tmp<volScalarField>> vDotAlphal =
-//        mixture->vDotAlphal();
-//    const volScalarField& vDotcAlphal = vDotAlphal[0]();
-//    const volScalarField& vDotvAlphal = vDotAlphal[1]();
-//    const volScalarField vDotvmcAlphal(vDotvAlphal - vDotcAlphal);
+    Pair<tmp<volScalarField>> vDotAlphal =
+        mixture->vDotAlphal();
+    const volScalarField& vDotcAlphal = vDotAlphal[0]();
+    const volScalarField& vDotvAlphal = vDotAlphal[1]();
+    const volScalarField vDotvmcAlphal(vDotvAlphal - vDotcAlphal);
 //
 //    if (MULESCorr)
 //    {
@@ -200,9 +200,17 @@
         //else
         //{
             alphaPhi = alphaPhiUn;
-    const volScalarField& vDotc = mixture->vmCond()/rho1;
-    const volScalarField& vDotv = mixture->vmEvap()/rho1;
-    const volScalarField vDotNetto(vDotc - vDotv);
+//    Pair<tmp<volScalarField>> mDotAlphal =
+//        mixture->mDotAlphal();
+//    const volScalarField& vDotcAlphal = mDotAlphal[0]()/rho1;
+//    const volScalarField& vDotvAlphal = mDotAlphal[1]()/rho1;
+////    const volScalarField& vDotcAlphal = mixture->mDotAlphal()[0]/rho1;
+////    const volScalarField& vDotvAlphal = mixture->mDotAlphal()[1]/rho1;
+//    const volScalarField vDotvmcAlphal(vDotvAlphal - vDotcAlphal);
+//
+//    const volScalarField& vDotc = mixture->vmCond()/rho1;
+//    const volScalarField& vDotv = mixture->vmEvap()/rho1;
+//    const volScalarField vDotNetto(vDotc + vDotv);
 
             //MULES::explicitSolve(alpha1, phiCN, alphaPhi, 1, 0);
             MULES::explicitSolve
@@ -211,11 +219,22 @@
 				alpha1, 
 				phiCN, 
 				alphaPhi, 
-				divU,
-                vDotNetto,
+                vDotvmcAlphal,
+                (divU*alpha1 + vDotcAlphal)(),
 				1, 
 				0
 			);
+            //MULES::explicitSolve
+			//(
+		    //    geometricOneField(), 
+			//	alpha1, 
+			//	phiCN, 
+			//	alphaPhi, 
+			//	divU,
+            //    vDotNetto,
+			//	1, 
+			//	0
+			//);
         //}
 
         alpha2 = 1.0 - alpha1;

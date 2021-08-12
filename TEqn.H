@@ -1,7 +1,11 @@
 {
-    const volScalarField& vDotc = mixture->vmCond()/rho1;
-    const volScalarField& vDotv = mixture->vmEvap()/rho1;
-    const volScalarField vDotNetto(vDotc - vDotv);
+    //const volScalarField& vDotc = mixture->vmCond();
+    //const volScalarField& vDotv = mixture->vmEvap();
+    //const volScalarField vDotNetto(vDotc + vDotv);
+	Pair<tmp<volScalarField> > vDotT = mixture->vDotT();
+		const volScalarField& vDotcT = vDotT[0]();
+		const volScalarField& vDotvT = vDotT[1]();
+	    const volScalarField vDotcmvT(vDotcT - vDotvT);
 
 	TSat = mixture->TSat();
     //alphat = turbulence->nut()/Prt;
@@ -22,8 +26,10 @@
 	    - fvm::Sp(fvc::div(phi),T)
 		- fvm::laplacian(alphaEff, T,"laplacian(alphaEff,T)")
 	 ==
-		  vDotNetto*hEvap/rhoCp
-//		  fvm::Sp(vDotcmvT/rhoCp, T) - vDotcmvT/rhoCp*TSat	
+//	-	  vDotNetto*hEvap/rhoCp
+		  fvm::Sp(vDotcmvT/rhoCp, T) - vDotcmvT/rhoCp*TSat	
+		  //fvm::Sp(((vDotcT + vDotvT)/rhoCp)/T, T) 
+		  //(vDotcT + vDotvT)/rhoCp
 	);
 
     TEqn.relax();
