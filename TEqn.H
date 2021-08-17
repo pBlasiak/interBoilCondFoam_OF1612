@@ -13,7 +13,9 @@
 	
 	// trzeba dodac kt dla turbulencji
 	//surfaceScalarField kf = mixture->kfHarmonic();
-	cp = mixture->cp();
+	
+	// trzeba zmienic w BC dla q na rhoCp i wtedy cp nie bedzie potrzebne
+	//cp = mixture->cp();
 	
 
 	fvScalarMatrix TEqn

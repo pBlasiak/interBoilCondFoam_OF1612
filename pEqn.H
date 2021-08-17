@@ -34,7 +34,8 @@
         fvScalarMatrix p_rghEqn
         (
             fvm::laplacian(rAUf, p_rgh) == fvc::div(phiHbyA)
-		  -	fvm::Sp(vDotcP-vDotvP,p_rgh) + (vDotcP-vDotvP)*(pSat-rho*gh) 
+		//-	fvm::Sp(vDotcP-vDotvP,p_rgh) + (vDotcP-vDotvP)*(pSat-rho*gh) 
+		  -	(vDotcP + vDotvP)
         );
 
         p_rghEqn.setReference(pRefCell, getRefCellValue(p_rgh, pRefCell));

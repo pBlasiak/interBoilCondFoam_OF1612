@@ -77,7 +77,7 @@
         phiCN = cnCoeff*phi + (1.0 - cnCoeff)*phi.oldTime();
     }
 
-    Pair<tmp<volScalarField>> vDotAlphal =
+    Pair<tmp<volScalarField> > vDotAlphal =
         mixture->vDotAlphal();
     const volScalarField& vDotcAlphal = vDotAlphal[0]();
     const volScalarField& vDotvAlphal = vDotAlphal[1]();
@@ -232,7 +232,7 @@
     )
     {
         rhoPhi = alphaPhi*(rho1 - rho2) + phiCN*rho2;
-        rhoPhiCpf = alphaPhi*(rho1*cp1 - rho2*cp2) + phiCN*rho2*cp2;
+        //rhoPhiCpf = alphaPhi*(rho1*cp1 - rho2*cp2) + phiCN*rho2*cp2;
     }
     else
     {
@@ -244,7 +244,7 @@
 
         // Calculate the end-of-time-step mass flux
         rhoPhi = alphaPhi*(rho1 - rho2) + phi*rho2;
-        rhoPhiCpf = alphaPhi*(rho1*cp1 - rho2*cp2) + phiCN*rho2*cp2;
+        //rhoPhiCpf = alphaPhi*(rho1*cp1 - rho2*cp2) + phiCN*rho2*cp2;
     }
 
     Info<< "Phase-1 volume fraction = "

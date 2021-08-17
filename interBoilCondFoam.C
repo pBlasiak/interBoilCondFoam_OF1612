@@ -116,6 +116,7 @@ int main(int argc, char *argv[])
             mixture->correct();
 
             #include "UEqn.H"
+			#include "TEqn.H"
 
             // --- Pressure corrector loop
             while (pimple.correct())
@@ -128,10 +129,12 @@ int main(int argc, char *argv[])
                 turbulence->correct();
             }
         }
-        #include "TEqn.H"
 
 		// czy to jest tu potrzebne?
 		// chyba do aktualizacji Tsat bylo?
+		// albo robic korekte na przed petla albo po niej
+		// trzeba sprawdziac co robi correct w danej klasie i zastanowic
+		// sie czy wszystko ma byc aktualizowane (np. interfejs i nu)
         mixture->correct();
 
 		//if (printWallHeatFluxes)
