@@ -4,6 +4,10 @@
 		const volScalarField& vDotvT = vDotT[1]();
 	    const volScalarField vDotcmvT(vDotcT - vDotvT);
 
+		//Info<< "vDotcT = " << vDotcT << endl;
+		//Info<< "vDotvT = " << vDotvT << endl;
+		//Info<< "vDotcmvT = " << vDotcmvT << endl;
+
 	TSat = mixture->TSat();
     //alphat = turbulence->nut()/Prt;
     //alphat.correctBoundaryConditions();

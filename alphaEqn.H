@@ -82,6 +82,9 @@
     const volScalarField& vDotcAlphal = vDotAlphal[0]();
     const volScalarField& vDotvAlphal = vDotAlphal[1]();
     const volScalarField vDotvmcAlphal(vDotvAlphal - vDotcAlphal);
+	//Info<< "vDotcAlphal = " << vDotcAlphal << endl;
+	//Info<< "vDotvAlphal = " << vDotvAlphal << endl;
+	//Info<< "vDotvmcAlphal = " << vDotvmcAlphal << endl;
 
     if (MULESCorr)
     {
