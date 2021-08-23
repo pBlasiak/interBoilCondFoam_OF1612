@@ -27,18 +27,23 @@
     constrainPressure(p_rgh, U, phiHbyA, rAUf, MRF);
 
     Pair<tmp<volScalarField> > vDotP = mixture->vDotP();
-    const volScalarField& vDotcP = vDotP[0]();
-    const volScalarField& vDotvP = vDotP[1]();
+    const volScalarField& vDotcP = vDotP[0](); // it should be 0 for evaporation and (-) for condensation
+    const volScalarField& vDotvP = vDotP[1](); // it should be (+) for evaporation and 0 for condensation
+    const volScalarField vDotcmvP = vDotcP - vDotvP;
 		//Info<< "vDotcP = " << vDotcP << endl;
 		//Info<< "vDotvP = " << vDotvP << endl;
     while (pimple.correctNonOrthogonal())
     {
         fvScalarMatrix p_rghEqn
         (
-            fvm::laplacian(rAUf, p_rgh) == fvc::div(phiHbyA)
-	//	-	fvm::SuSp(vDotcP-vDotvP,p_rgh) + (vDotcP-vDotvP)*(pSat-rho*gh) 
-		-	fvm::Sp(vDotcP,p_rgh) - vDotvP + vDotcP*(pSat-rho*gh) 
-		//  -	(vDotcP + vDotvP)
+//            fvm::laplacian(rAUf, p_rgh) == fvc::div(phiHbyA)
+//		-	fvm::SuSp(vDotcP-vDotvP,p_rgh) + (vDotcP-vDotvP)*(pSat-rho*gh) 
+//	//	-	fvm::Sp(vDotcP,p_rgh) - vDotvP + vDotcP*(pSat-rho*gh) 
+//		//  -	(vDotcP + vDotvP)
+            fvc::div(phiHbyA) - fvm::laplacian(rAUf, p_rgh)
+		==
+			//fvm::Sp(vDotcP-vDotvP,p_rgh) - (vDotcP-vDotvP)*(pSat-rho*gh) 
+		-	fvm::SuSp(-vDotcmvP,p_rgh) - (vDotcmvP)*(pSat-rho*gh) 
         );
 
         p_rghEqn.setReference(pRefCell, getRefCellValue(p_rgh, pRefCell));
@@ -47,11 +52,11 @@
 
         if (pimple.finalNonOrthogonalIter())
         {
-            phi = phiHbyA - p_rghEqn.flux();
+            phi = phiHbyA + p_rghEqn.flux();
 
             p_rgh.relax();
 
-            U = HbyA + rAU*fvc::reconstruct((phig - p_rghEqn.flux())/rAUf);
+            U = HbyA + rAU*fvc::reconstruct((phig + p_rghEqn.flux())/rAUf);
             U.correctBoundaryConditions();
             fvOptions.correct(U);
         }

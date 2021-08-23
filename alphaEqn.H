@@ -79,12 +79,11 @@
 
     Pair<tmp<volScalarField> > vDotAlphal =
         mixture->vDotAlphal();
-    const volScalarField& vDotcAlphal = vDotAlphal[0]();
-    const volScalarField& vDotvAlphal = vDotAlphal[1]();
+    const volScalarField& vDotcAlphal = vDotAlphal[0](); // it should be 0 for evaporation and (+) for condensation
+    const volScalarField& vDotvAlphal = vDotAlphal[1](); // it should be (-) for evaporation and 0 for condensation
     const volScalarField vDotvmcAlphal(vDotvAlphal - vDotcAlphal);
-	//Info<< "vDotcAlphal = " << vDotcAlphal << endl;
-	//Info<< "vDotvAlphal = " << vDotvAlphal << endl;
-	//Info<< "vDotvmcAlphal = " << vDotvmcAlphal << endl;
+	//Info<< "vDotcAlphal = " << vDotcAlphal << endl; 
+	//Info<< "vDotvAlphal = " << vDotvAlphal << endl; 
 
     if (MULESCorr)
     {
