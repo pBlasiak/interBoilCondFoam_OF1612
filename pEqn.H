@@ -44,8 +44,7 @@
 		==
 			//fvm::Sp(vDotcP-vDotvP,p_rgh) - (vDotcP-vDotvP)*(pSat-rho*gh) 
 		//-	fvm::SuSp(-vDotcmvP,p_rgh) - (vDotcmvP)*(pSat-rho*gh) 
-		//-	fvm::Sp(-vDotcmvP,p_rgh) - (vDotcmvP)*(pSat-rho*gh) // chyba daje te same wyniki co z SuSp i troche szybciej liczy ale trzeba sprawdzic
-			fvm::Sp(vDotcmvP,p_rgh) - (vDotcmvP)*(pSat-rho*gh) // chyba daje te same wyniki co z SuSp i troche szybciej liczy ale trzeba sprawdzic
+		//-	fvm::Sp(-vDotcmvP,p_rgh) - (vDotcmvP)*(pSat-rho*gh) // chyba daje te same wyniki co z SuSp i troche szybciej liczy ale trzeba sprawdzic fvm::Sp(vDotcmvP,p_rgh) - (vDotcmvP)*(pSat-rho*gh) // chyba daje te same wyniki co z SuSp i troche szybciej liczy ale trzeba sprawdzic
         );
 
         p_rghEqn.setReference(pRefCell, getRefCellValue(p_rgh, pRefCell));
@@ -78,4 +77,6 @@
         );
         p_rgh = p - rho*gh;
     }
+    Info<< "min/max(U) = " << min(U).value() << ", "
+        << max(U).value() <<endl;
 }
