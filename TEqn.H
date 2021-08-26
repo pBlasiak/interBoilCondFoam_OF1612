@@ -11,8 +11,7 @@
     //alphat = turbulence->nut()/Prt;
     //alphat.correctBoundaryConditions();
 	//alphaEff = mixture->alphaEff() + alphat;
-	alphaEff = mixture->alphaEff();
-	surfaceScalarField alphaEfff = mixture->alphaEfff();
+	alphaEff = mixture->k()/rhoCp;
 	
 	// trzeba dodac kt dla turbulencji
 	//surfaceScalarField kf = mixture->kfHarmonic();
