@@ -8,13 +8,9 @@
 	//Info<< "vDotvT = " << vDotvT << endl; 
 
 	TSat = mixture->TSat();
-    //alphat = turbulence->nut()/Prt;
-    //alphat.correctBoundaryConditions();
-	//alphaEff = mixture->alphaEff() + alphat;
-	alphaEff = mixture->k()/rhoCp;
-	
-	// trzeba dodac kt dla turbulencji
-	//surfaceScalarField kf = mixture->kfHarmonic();
+    alphat = turbulence->nut()/Prt;
+    alphat.correctBoundaryConditions();
+	alphaEff = mixture->k()/rhoCp + alphat;
 	
 	// trzeba zmienic w BC dla q na rhoCp i wtedy cp nie bedzie potrzebne
 	//cp = mixture->cp();

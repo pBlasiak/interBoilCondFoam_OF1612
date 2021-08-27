@@ -33,6 +33,30 @@ rho.oldTime();
 #include "readhRef.H"
 #include "gh.H"
 
+Info<< "Reading Prt\n" << endl;
+
+IOdictionary transportProperties
+(
+	IOobject
+	(
+		"transportProperties",
+		runTime.constant(),
+		mesh,
+		IOobject::MUST_READ,
+		IOobject::NO_WRITE
+	)
+);
+
+dimensionedScalar Prt
+(
+	transportProperties.lookup("Prt")
+);
+
+bool printWallHeatFluxes
+(
+	transportProperties.lookupOrDefault("printWallHeatFluxes", false)
+);
+
 volScalarField p
 (
     IOobject
@@ -97,39 +121,6 @@ p = p_rgh + rho*gh;
 mixture->correct();
 volScalarField TSat = mixture->TSat();
 
-// Need to store for turbulentHeatFluxTemperature BC
-Info<< "Creating field alphaEff\n" << endl;
-volScalarField alphaEff
-(
-    IOobject
-    (
-        "alphaEff",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::NO_WRITE
-    ),
-	mesh,
-    dimensionedScalar("alphaEff0", dimensionSet(0,2,-1,0,0,0,0), 0)
-);
-
-// Need to store for turbulentHeatFluxTemperature BC
-//Info<< "Creating field cp\n" << endl;
-//volScalarField cp
-//(
-//    IOobject
-//    (
-//        "cp",
-//        runTime.timeName(),
-//        mesh,
-//        IOobject::NO_READ,
-//        IOobject::NO_WRITE
-//    ),
-//	mesh,
-//    dimensionedScalar("cp00", dimensionSet(0,2,-2,-1,0,0,0), 0)
-//);
-//cp = mixture->cp();
-
 // Need to store rho for ddt(rhoCp, T)
 volScalarField rhoCp
 (
@@ -158,6 +149,56 @@ rhoCp.oldTime();
 //    fvc::interpolate(rhoCp)*phi
 //);
 
+// kinematic turbulent thermal thermal conductivity m2/s
+Info<< "Reading field alphat\n" << endl;
+volScalarField alphat
+(
+    IOobject
+    (
+        "alphat",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
+// Need to store for turbulentHeatFluxTemperature BC
+Info<< "Creating field alphaEff\n" << endl;
+volScalarField alphaEff
+(
+    IOobject
+    (
+        "alphaEff",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+	mixture->k()/rhoCp + alphat
+	//mesh,
+    //dimensionedScalar("alphaEff0", dimensionSet(0,2,-1,0,0,0,0), 0)
+);
+
+// Need to store for turbulentHeatFluxTemperature BC
+//Info<< "Creating field cp\n" << endl;
+//volScalarField cp
+//(
+//    IOobject
+//    (
+//        "cp",
+//        runTime.timeName(),
+//        mesh,
+//        IOobject::NO_READ,
+//        IOobject::NO_WRITE
+//    ),
+//	mesh,
+//    dimensionedScalar("cp00", dimensionSet(0,2,-2,-1,0,0,0), 0)
+//);
+//cp = mixture->cp();
+
+
 // Mass flux
 surfaceScalarField rhoPhi
 (
@@ -178,9 +219,6 @@ autoPtr<incompressible::turbulenceModel> turbulence
 (
     incompressible::turbulenceModel::New(U, phi, mixture)
 );
-
-
-
 
 
 label pRefCell = 0;
