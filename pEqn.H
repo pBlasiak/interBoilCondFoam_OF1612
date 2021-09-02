@@ -30,8 +30,8 @@
     const volScalarField& vDotcP = vDotP[0](); // it should be 0 for evaporation and (-) for condensation
     const volScalarField& vDotvP = vDotP[1](); // it should be (+) for evaporation and 0 for condensation
     const volScalarField vDotcmvP = vDotcP - vDotvP;
-		//Info<< "vDotcP = " << vDotcP << endl;
-		//Info<< "vDotvP = " << vDotvP << endl;
+		Info<< "vDotcP = " << vDotcP << endl;
+		Info<< "vDotvP = " << vDotvP << endl;
     while (pimple.correctNonOrthogonal())
     {
         fvScalarMatrix p_rghEqn
