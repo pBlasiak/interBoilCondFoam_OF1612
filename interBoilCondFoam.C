@@ -116,7 +116,8 @@ int main(int argc, char *argv[])
             mixture->correct();
 
             #include "UEqn.H"
-			#include "TEqn.H"
+			#include "TControls.H"
+            #include "TEqnSubCycle.H"
 
             // --- Pressure corrector loop
             while (pimple.correct())
