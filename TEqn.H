@@ -4,8 +4,8 @@
 		const volScalarField& vDotvT = vDotT[1](); // it should be (+) for evaporation and 0 for condensation
 	    const volScalarField vDotcmvT(vDotcT - vDotvT);
 
-	Info<< "vDotcT = " << vDotcT << endl; 
-	Info<< "vDotvT = " << vDotvT << endl; 
+	//Info<< "vDotcT = " << vDotcT << endl; 
+	//Info<< "vDotvT = " << vDotvT << endl; 
 
 	TSat = mixture->TSat();
     alphat = turbulence->nut()/Prt;
